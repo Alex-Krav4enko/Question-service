@@ -1,0 +1,73 @@
+{% include 'header.twig' %}
+
+<body>
+  <div class="container row">
+    <div class="row">
+      <nav class="blue-grey lighten-3">
+        <div class="nav-wrapper">
+          <a href="/u/kravchenko/question/" class="brand-logo right">FAQ</a>
+          <ul class="left">
+            <li><a href="/u/kravchenko/question/admin/">Администраторы</a></li>
+            <li class="active"><a href="/u/kravchenko/question/theme/">Темы</a></li>
+            <li><a href="/u/kravchenko/question/question/">Вопросы</a></li>
+            <li><a href="?/logout/">Выйти</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="row"><h4>Добавить тему</h4></div>
+
+    <form method="post" action="?/add/" class="row">
+      <div class="input-field col s3">
+          <input name="title" id="icon_prefix" type="text" class="validate">
+          <label for="icon_prefix">Название</label>
+      </div>
+      <div class="input-field col s2 offset-s1">
+        <button class="btn waves-effect waves-light" type="submit" name="addTheme">Добавить</button>
+      </div>
+    </form>
+
+    <div class="row"><h4>Темы</h4></div>
+
+    <table class="bordered">
+      <thead>
+      <tr>
+        <th>Название</th>
+        <th>Количество вопросов</th>
+        <th>Опубликовано</th>
+        <th>Без ответа</th>
+        <th>Удалить</th>
+        <th>Вопросы</th>
+      </tr>
+      </thead>
+
+      <tbody>
+        {% for index, theme in data.theme %}
+          <tr>
+            <td>
+              <!-- Modal Trigger -->
+              <a class="waves-effect" href="#modal{{ index }}">{{ theme.title|e }}</a>
+              <!-- Modal Structure -->
+              <form method="post" action="?/update/id/{{ theme.id }}/" id="modal{{ index }}" class="modal">
+                <div class="modal-content">
+                  <h4>Изменить название</h4>
+                  <input id="icon_prefix" type="text" class="validate" name="title" value="{{ theme.title|e }}">
+                </div>
+                <div class="modal-footer">
+                  <button class="modal-action modal-close waves-effect waves-green btn-flat" type="submit" name="updateTheme">Изменить</button>
+                </div>
+              </form>
+            </td>
+            <td>{{ theme.count }}</td>
+            <td>{{ theme.count_publication }}</td>
+            <td>{{ theme.count_no_answer }}</td>
+            <td><a class="btn" href="?/delete/id/{{ theme.id }}/"><i class="material-icons">delete</i></a></td>
+            <td><a class="btn" href="../question/?/id_theme/{{ theme.id }}/"><i class="material-icons">view_list</i></a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% include 'footer.twig' %}

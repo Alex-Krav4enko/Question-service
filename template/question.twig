@@ -1,0 +1,131 @@
+{% include 'header.twig' %}
+
+<body>
+  <div class="container row">
+    <div class="row">
+      <nav class="blue-grey lighten-3">
+        <div class="nav-wrapper">
+          <a href="/u/kravchenko/question/" class="brand-logo right">FAQ</a>
+          <ul class="left">
+            <li><a href="/u/kravchenko/question/admin/">Администраторы</a></li>
+            <li><a href="/u/kravchenko/question/theme/">Темы</a></li>
+            <li class="active"><a href="/u/kravchenko/question/question/">Вопросы</a></li>
+            <li><a href="?/logout/">Выйти</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    {% if isOneThemeQuestion == false %}
+      <div class="row"><h4>Вопросы без ответов</h4></div>
+    {% elseif isOneThemeQuestion == true %}
+      <div class="row"><h4>Вопросы</h4></div>
+    {% endif %}
+
+    <table class="bordered">
+      <thead>
+        <tr>
+          <th>Описание</th>
+          <th>Статус</th>
+          <th>Дата создания</th>
+          <th>Имя автора</th>
+          <th>eMail автора</th>
+          <th>Ответ</th>
+          <th>Тема</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+      {% for index, question in data.question %}
+        <tr>
+          <td>
+            <!-- Modal Trigger -->
+            <a class="waves-effect" href="#modal{{ (index + 1) * 7 }}">{{ question.question }}</a>
+            <!-- Modal Structure -->
+            <form method="post" action="?/update/id/{{ question.id }}/" id="modal{{ (index + 1) * 7 }}" class="modal">
+              <div class="modal-content">
+                <h4>Изменить вопрос</h4>
+                <textarea id="textarea1" name="question" class="materialize-textarea">{{ question.question }}</textarea>
+              </div>
+              <div class="modal-footer">
+                <button class="modal-action modal-close waves-effect waves-green btn-flat" type="submit" name="updateQuestion">Изменить</button>
+              </div>
+            </form>
+          </td>
+          <td>
+            {% if question.answer == false %}
+              <span class="red-text text-darken-1">Ожидает ответа</span>
+            {% elseif question.answer == true and question.publication == 0 %}
+              <span class="yellow-text text-darken-3">Скрыт</span>
+            {% elseif question.answer == true and question.publication == 1 %}
+              <span class="green-text text-darken-1">Опубликован</span>
+            {% endif %}
+
+          </td>
+          <td>{{ question.date_added }}</td>
+          <td>
+            <!-- Modal Trigger -->
+            <a class="waves-effect" href="#modal{{ (index + 1) * 11 }}">{{ question.author }}</a>
+            <!-- Modal Structure -->
+            <form method="post" action="?/update/id/{{ question.id }}/" id="modal{{ (index + 1) * 11 }}" class="modal">
+              <div class="modal-content">
+                <h4>Изменить имя автора</h4>
+                <input id="icon_prefix" name="author" type="text" value="{{ question.author }}" class="validate">
+              </div>
+              <div class="modal-footer">
+                <button class="modal-action modal-close waves-effect waves-green btn-flat" type="submit" name="updateAuthor">Изменить</button>
+              </div>
+            </form>
+          </td>
+          <td>{{ question.email }}</td>
+          <td>
+            <!-- Modal Trigger -->
+            {% if question.answer == false %}
+              <a class="waves-effect" href="#modal{{ (index + 1) * 13 }}">Ответить</a>
+            {% else %}
+              <a class="waves-effect" href="#modal{{ (index + 1) * 13 }}">{{ question.answer }}</a>
+            {% endif %}
+            <!-- Modal Structure -->
+            <form method="post" action="?/update/id/{{ question.id }}/" id="modal{{ (index + 1) * 13 }}" class="modal">
+              <div class="modal-content">
+                <h4>Ответ</h4>
+                <textarea id="textarea1" name="answer" class="materialize-textarea">{{ question.answer }}</textarea>
+              </div>
+              <div class="modal-footer">
+                <button class="modal-action modal-close waves-effect waves-green btn-flat" type="submit" name="updateAnswer">Изменить</button>
+              </div>
+            </form>
+          </td>
+          <td>
+            <!-- Dropdown Trigger -->
+            {% for theme in data.theme if question.id_theme == theme.id %}
+                <a class='dropdown-button btn' href='#' data-activates='dropdown{{ (index + 1) * 7 }}'>{{ theme.title }}</a>
+            {% endfor %}
+            <!-- Dropdown Structure -->
+            <ul id='dropdown{{ (index + 1) * 7 }}' class='dropdown-content'>
+              {% for theme in data.theme %}
+                <li><a href="?/update/id/{{ question.id }}/id_theme/{{ theme.id }}/">{{ theme.title }}</a></li>
+              {% endfor %}
+            </ul>
+          </td>
+          <td>
+            <!-- Dropdown Trigger -->
+            <a class='dropdown-button btn' href='#' data-activates='dropdown{{ (index + 1) * 11 }}'><i class="material-icons">mode_edit</i></a>
+            <!-- Dropdown Structure -->
+            <ul id='dropdown{{ (index + 1) * 11 }}' class='dropdown-content'>
+              <li><a href="?/delete/id/{{ question.id }}/">Удалить</a></li>
+              {% if question.publication == 1 %}
+                <li><a href="?/publication/id/{{ question.id }}/publication/0/">Скрыть</a></li>
+              {% elseif question.publication == 0 and question.answer == true %}
+                <li><a href="?/publication/id/{{ question.id }}/publication/1/">Опубликовать</a></li>
+              {% endif %}
+            </ul>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% include 'footer.twig' %}
